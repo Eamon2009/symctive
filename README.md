@@ -1,4 +1,4 @@
-# Quadtrix [![License](https://img.shields.io/github/license/Eamon2009/Transformer-language-model)](LICENSE)
+# Quadtrix (symctive)[![License](https://img.shields.io/github/license/Eamon2009/Transformer-language-model)](LICENSE)
 <img width="944" height="208" alt="image" src="https://github.com/user-attachments/assets/494ae0a6-c9ad-48bf-8280-baa0472911f8" />
 <img width="1919" height="696" alt="image" src="https://github.com/user-attachments/assets/43ec70bc-e3d9-414d-9072-c5f5dc955416" />
 
