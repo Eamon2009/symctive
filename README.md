@@ -65,62 +65,17 @@ n_layer       = 4          # Number of transformer blocks
 dropout       = 0.2        # Regularization
 ```
 
-### Three Pre-Tuned Configurations
-
-**CPU (Laptop) — Fast Feedback**
-```python
-batch_size, block_size, max_iters = 16, 128, 3000
-n_embd, n_head, n_layer = 128, 4, 4
-# ~0.82M parameters
-# Trains in ~40 min on AMD Ryzen
-```
-
-**GPU (Google Colab) — Best Quality**
-```python
-batch_size, block_size, max_iters = 64, 256, 5000
-n_embd, n_head, n_layer = 384, 6, 6
-# ~10.82M parameters
-# Trains in ~60 min on Colab GPU
-# Best output quality
-```
-
-**GPU (Tesla T4) — Efficient**
-```python
-batch_size, block_size, max_iters = 64, 128, 5000
-n_embd, n_head, n_layer = 200, 4, 4
-# ~1.99M parameters
-# Trains in **6.1 minutes** ← Fastest
-# Best parameter/data balance
-```
-
----
-
 ## Training Results
 
-###  Tesla T4 
-
-**Configuration**: 4 layers × 4 heads × 200 dim = **1.99M params**
-
-| Metric | Value |
-|--------|-------|
-| Device | Tesla T4 (CUDA 13.0) |
-| Dataset | ~31.4M characters (children's stories) |
-| Train tokens | 28.3M |
-| Val tokens | 3.1M |
-| Training time | **6.1 minutes** |
-| Best val loss | **0.9250** |
-| Final train loss | 0.9307 |
-| Overfitting | None detected |
-
 ---
 
-###  (10.82M Parameters)
+###  10.82M Parameters
 
 **Configuration**: 6 layers × 6 heads × 384 dim
 
 | Metric | Value |
 |--------|-------|
-| Device | CUDA (Google Colab GPU) |
+| Device | CUDA (T4-GPU) |
 | Dataset | ~88.4M characters |
 | Parameters | 10.82M |
 | Training time | 61.3 minutes |
@@ -210,13 +165,13 @@ The Chinchilla (2022) scaling law suggests: **~20 tokens of training data per pa
 
 Let's see how our runs align:
 
-| Model | Parameters | Training Data | Optimal (20×) | Coverage |
+| Device | Parameters | Training Data | Optimal (20×) | Coverage |
 |-------|------------|---------------|--------------|----------|
-| Run 1 | 0.82M | 200K tokens | 16.4M | **1.2%** |
-| Run 3 | 1.99M | 28.3M tokens | 39.8M | **71.1%** ← Best balanced |
-| Run 2 | 10.82M | 79.6M tokens | 216M | **36.8%** |
-| GPT-2 Small | 117M | 40B tokens | 2.3B | ~1700% |
-| GPT-3 | 175B | 600B tokens | 3.5T | ~17% |
+| CPU(single) | 0.82M | 200K tokens | 16.4M | **1.2%** |
+| Rtx-3060(single) | 1.99M | 28.3M tokens | 39.8M | **71.1%** ← Best balanced |
+| T4 (single)| 10.82M | 79.6M tokens | 216M | **36.8%** |
+| GPT-2 Small(cluster) | 117M | 40B tokens | 2.3B | ~1700% |
+| GPT-3 (cluster)| 175B | 600B tokens | 3.5T | ~17% |
 
 **Insight**: Run 3 is the most *balanced*—the model size and data quantity are well-matched. Run 2 has the largest model but is only at 37% optimal data coverage, meaning it would benefit more from adding data than adding parameters.
 
