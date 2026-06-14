@@ -1,13 +1,8 @@
-# Quadtrix (symctive)[![License](https://img.shields.io/github/license/Eamon2009/Transformer-language-model)](LICENSE)
-<img width="944" height="208" alt="image" src="https://github.com/user-attachments/assets/494ae0a6-c9ad-48bf-8280-baa0472911f8" />
-<img width="1919" height="696" alt="image" src="https://github.com/user-attachments/assets/43ec70bc-e3d9-414d-9072-c5f5dc955416" />
+# symctive[![License](https://img.shields.io/github/license/Eamon2009/Transformer-language-model)](LICENSE)
+A GPT-style transformer trained character-by-character on children's stories. No pre-trained weights. No fine-tuning. Just PyTorch, from init to generation.
+Character-level Transformer is a sequence-to-sequence architecture that operates on the granularity of individual characters rather than words or subword tokens. By utilizing a self-attention mechanism over long sequences of characters, the model learns to construct internal representations of morphology, syntax, and semantics from the ground up, effectively eliminating "out-of-vocabulary" (OOV) issues. While this approach allows for high fidelity in modeling rare words, spelling variations, and creative linguistics, it significantly increases the computational complexity-typically $O(L^2)$ where $L$ is the sequence length-as a single sentence requires many more steps than its word-level equivalent. ***Consequently, character-level Transformers often require deeper architectures or auxiliary losses to capture the long-range dependencies necessary to match the semantic performance of traditional token-based models***
 
-
-
-A minimal, educational GPT-style transformer trained character-by-character on children's stories. No pre-trained weights. No fine-tuning. Just raw PyTorch, from init to generation.
-Character-level Transformer is a sequence-to-sequence architecture that operates on the granularity of individual characters rather than words or subword tokens. By utilizing a self-attention mechanism over long sequences of characters, the model learns to construct internal representations of morphology, syntax, and semantics from the ground up, effectively eliminating "out-of-vocabulary" (OOV) issues. While this approach allows for high fidelity in modeling rare words, spelling variations, and creative linguistics, it significantly increases the computational complexity—typically $O(L^2)$ where $L$ is the sequence length—as a single sentence requires many more steps than its word-level equivalent. Consequently, character-level Transformers often require deeper architectures or auxiliary losses to capture the long-range dependencies necessary to match the semantic performance of traditional token-based models
-
-> **The goal**: Understand how language models learn patterns. See it happen on your machine. Train in minutes on a GPU.
+> **The goal**: Understand how language models learn patterns. See it happen on a GPU and CPU .
 
 ---
 
@@ -24,44 +19,6 @@ python transformer.py
 # Press Ctrl+C to stop
 ```
 
-**That's it.** No complex setup, no data pipelines, no credentials.
-
----
-
-## What Is This?
-
-Quadtrix is a learning project. It trains a tiny transformer on text—character by character—and learns which characters tend to follow others. At generation time, it predicts the next character, feeds it back in, and repeats.
-
-**It's the same architecture as GPT**, just much smaller (1M–11M parameters instead of 175B) and trained on much less data (thousands of stories instead of the internet).
-
-The magic: in just 6 minutes on a Tesla T4 GPU, a 2M-parameter model learns meaningful patterns about narrative structure, dialogue, and storytelling. The output isn't Shakespeare, but it *is* recognizable as a story.
-
----
-
-## How It Works
-
-### The Pipeline
-
-```
-1. Load children's stories from disk
-   ↓
-2. Encode each character as an integer (vocab size: 28–110)
-   ↓
-3. Split into train/val chunks (80/20)
-   ↓
-4. Build a GPT-style transformer with:
-   - Embedding layer (character → vector)
-   - Transformer blocks (self-attention + feedforward)
-   - Output projection (vector → logits over vocab)
-   ↓
-5. Train for N steps, measuring loss every eval_interval
-   ↓
-6. Save best weights whenever validation loss improves
-   ↓
-7. Load best model and generate text forever
-   ↓
-8. Press Ctrl+C to stop
-```
 
 ### What the Model Actually Does
 
@@ -86,8 +43,6 @@ transformer.py          ← Everything. One file.
 best_model.pt           ← Saved weights (after first training run)
 data.txt                ← Your text file (any UTF-8 file works)
 ```
-
-That's all. No fancy folder structure. No config files. Edit hyperparameters directly in the script.
 
 ---
 
@@ -142,9 +97,7 @@ n_embd, n_head, n_layer = 200, 4, 4
 
 ## Training Results
 
-Three runs. Three different hardware setups. All converged well.
-
-### Run 3 — Tesla T4 (Latest) ⭐
+###  Tesla T4 
 
 **Configuration**: 4 layers × 4 heads × 200 dim = **1.99M params**
 
@@ -159,28 +112,9 @@ Three runs. Three different hardware setups. All converged well.
 | Final train loss | 0.9307 |
 | Overfitting | None detected |
 
-**Training curve** (every 200 steps):
-```
-[    0/5000]   train=4.6207   val=4.6202   elapsed=2s    << best!
-[  200/5000]   train=2.2058   val=2.1986   elapsed=17s   << best!
-[  400/5000]   train=1.6111   val=1.6039   elapsed=32s   << best!
-[ 1000/5000]   train=1.2495   val=1.2567   elapsed=76s   << best!
-[ 2000/5000]   train=1.0731   val=1.0765   elapsed=149s  << best!
-[ 3000/5000]   train=1.0000   val=0.9956   elapsed=221s  << best!
-[ 4000/5000]   train=0.9601   val=0.9642   elapsed=294s
-[ 4200/5000]   train=0.9515   val=0.9489   elapsed=309s  << best!
-[ 4400/5000]   train=0.9433   val=0.9431   elapsed=323s  << best!
-[ 4800/5000]   train=0.9331   val=0.9250   elapsed=353s  << best!
-[ 4999/5000]   train=0.9307   val=0.9430   elapsed=367s
-
-[DONE] Training finished in 367.0s (6.1 min) | Best val loss: 0.9250
-```
-
-**Key insight**: This run hit the **sweet spot**—large enough to learn coherent patterns, small enough to train fast. It's the reference configuration.
-
 ---
 
-### Run 2 — Google Colab (10.82M Parameters)
+###  (10.82M Parameters)
 
 **Configuration**: 6 layers × 6 heads × 384 dim
 
@@ -197,42 +131,9 @@ Three runs. Three different hardware setups. All converged well.
 
 ---
 
-### Run 1 — CPU Laptop (0.82M Parameters)
-
-**Configuration**: 4 layers × 4 heads × 128 dim
-
-| Metric | Value |
-|--------|-------|
-| Device | AMD Ryzen 5 PRO 3500U (CPU only) |
-| Parameters | 0.82M |
-| Dataset | ~201K characters |
-| Training time | 39.4 minutes |
-| Best val loss | 1.3145 |
-| Overfitting | None |
-
-**Result**: Smallest model, tiniest dataset. Trains fastest on CPU. Output is fragmented but shows the model learned *something*.
-
----
-
-## Head-to-Head Comparison
-
-| Metric | Run 1 — CPU | Run 2 — Colab | Run 3 — T4 ⭐ |
-|--------|-------------|--------------|------------|
-| **Parameters** | 0.82M | 10.82M | 1.99M |
-| **Training data** | 200K chars | 88.4M chars | 31.4M chars |
-| **Training time** | 39.4 min | 61.3 min | **6.1 min** |
-| **Best val loss** | 1.3145 | **0.7176** | 0.9250 |
-| **Output coherence** | Fragmented | Coherent paragraphs | Basic sentences |
-| **Overfitting** | ✓ None | ✓ None | ✓ None |
-| **Still improving?** | Yes | Yes | Yes |
-
-> **Observation**: All three were still improving at the final checkpoint. More training steps = better loss.
-
----
-
 ## Example Outputs
 
-### Run 2 Output (10.82M params) — Best Quality
+###Output (10.82M params)
 
 ```
 Upon a time, there were two friends, Jack and Tom. They had a cold doll in
@@ -249,43 +150,9 @@ that night, he had never seen a small boy just soon could drink.
 **Analysis**: Clear sentence structure. Named characters. Logical progression. Some linguistic oddities ("felt dizzy and wanted to share his happy") but unmistakably a story.
 
 ---
-
-### Run 3 Output (1.99M params, Tesla T4) — Efficient
-
-```
-Timmy and elsed him to tell being jumping things. They were tired and making
-some pinkets and help paper me. They had to see them, drain and ran ar her
-mommy. They also fast with the stretch and sacks the changer.
-
-Lily's truck laughed and saw a rock. She said, "You can't here some wet
-sicks. You have something new favorite toys, I do yours."
-```
-
-**Analysis**: Narrative present. Dialogue structure intact. Characters named. Some word-order errors and made-up words, but the *shape* of a story is clear.
-
----
-
-### Run 1 Output (0.82M params) — Minimal
-
-```
-when years me told be found a big ea reak abig driendly they named not she
-rabbit smiled by aded he what in again one smiled the mushrought boy one day
-and was arroom him that she rabbing animals the dreezed at neard had to there
-man owl them with o box
-```
-
-**Analysis**: Word boundaries mostly intact. Character names present (rabbit, owl). But syntax falls apart—the model is struggling to hold sentence structure. This is a 0.82M model trained on tiny data; it's learning *something* but hasn't converged to coherent text.
-
----
 ## Project Structure
  
 ```
-.
-├── .github/
-│   ├── ISSUE_TEMPLATE/      # GitHub issue templates
-│   └── workflows/           # CI/CD workflows
-├── .vscode/                 # VS Code configuration
-├── GPU train/               # GPU training scripts and configurations
 ├── assets/                  # Images, diagrams, and other assets
 ├── checkpoints/             # Saved model checkpoints
 ├── config/                  # Configuration files
@@ -331,7 +198,7 @@ Phase 3: Diminishing returns (80–100%)
 | Run | Final Train | Final Val | Gap |
 |-----|-------------|-----------|-----|
 | CPU | 1.3191 | 1.3145 | 0.0046 |
-| Colab | 0.7259 | 0.7176 | 0.0083 |
+| RTX-3060 | 0.7259 | 0.7176 | 0.0083 |
 | T4 | 0.9307 | 0.9250 | 0.0057 |
 
 All gaps are tiny. **No overfitting detected.** The model is generalizing well to unseen text.
@@ -339,9 +206,6 @@ All gaps are tiny. **No overfitting detected.** The model is generalizing well t
 ---
 
 ## Scaling Laws: Where Quadtrix Sits
-<img width="1029" height="705" alt="Screenshot 2026-03-17 171921" src="https://github.com/user-attachments/assets/1fa78e9d-520d-4227-972e-368bad354968" />
-
-
 The Chinchilla (2022) scaling law suggests: **~20 tokens of training data per parameter is optimal**.
 
 Let's see how our runs align:
@@ -391,22 +255,6 @@ for _ in range(num_chars_to_generate):
 **Why output differs each run**: The sampling step is random. Same weights, different random seeds = different output. Add `torch.manual_seed(42)` for deterministic output.
 
 ---
-
-## Known Limitations
-
-1. **Character-level learning** — the model learns characters, not words. It cannot reliably spell or track meaning across paragraphs.
-
-2. **Output coherence** — especially on smaller runs. Sentences drift logically. Names disappear. Tense breaks. This is expected at this scale.
-
-3. **All models undertrained** — validation loss was still improving at iteration N. More training steps would help all three.
-
-4. **Limited data** — Run 2 is only at 37% optimal data coverage. A larger story corpus would meaningfully improve output quality.
-
-5. **No long-range memory** — transformer context window is fixed (128 or 256 tokens). The model cannot reference events from 10 paragraphs ago.
-
----
-
-## Technical Details
 
 ### Model Architecture
 
@@ -470,19 +318,6 @@ for step in range(max_iters):
 
 ---
 
-## Why This Project Matters
-
-1. **Educational**: See exactly how a language model learns. No black boxes.
-
-2. **Verifiable**: You can trace loss, inspect weights, understand every line of code.
-
-3. **Fast**: Even on CPU, training finishes in under an hour. On GPU, minutes.
-
-4. **Runnable**: One script, one dependency (PyTorch). No cloud account required.
-
-Quadtrix is to GPT what nanoGPT is to transformers: a stripped-down, readable, educational version that teaches the core ideas.
-
----
 
 ## Getting Started
 
@@ -498,7 +333,3 @@ Quadtrix is to GPT what nanoGPT is to transformers: a stripped-down, readable, e
 ## License
 
 MIT
-
----
-
-*Built with PyTorch. | [GitHub](https://github.com/Eamon2009/Transformer-language-model)*
